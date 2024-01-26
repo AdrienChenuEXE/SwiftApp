@@ -26,8 +26,7 @@ let availableGames = [
     Game(name: "Skyrim", genre: .rpg, coverName: "skyrim"),
     Game(name: "WoW", genre: .mmorpg, coverName: "wow"),
     Game(name: "CS:GO", genre: .fps, coverName: "csgo"),
-    Game(name: "Diablo IV", genre: .looter, coverName: "diabloIV"),
-    Game(name: "Undefined", genre: .unset, coverName: nil)
+    Game(name: "Diablo IV", genre: .looter, coverName: "diabloIV")
 ]
 
 func randomGame() -> Game {

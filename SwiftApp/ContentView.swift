@@ -7,64 +7,66 @@
 
 import SwiftUI
 
+enum LooterFeature {
+    case loot
+    case wishList
+    case profile
+}
+
 class Inventory : ObservableObject {
-    @Published var loot = items
+    @Published var loot = [
+        LootItem(name: "Magic Wand", type: .magic, rarity: .common, attackStrength: 5, game: randomGame()),
+        LootItem(name: "Steel Armor", type: .poison, rarity: .uncommon, attackStrength: nil, game: randomGame()),
+        LootItem(name: "Fire Sword", type: .thunder, rarity: .rare, attackStrength: 15, game: randomGame()),
+        LootItem(name: "Health Potion", type: .ice, rarity: .common, attackStrength: nil, game: randomGame()),
+        LootItem(name: "Amulet of Power", type: .unknown, rarity: .epic, attackStrength: 30, game: randomGame()),
+        LootItem(name: "Swift Boots", type: .wind, rarity: .uncommon, attackStrength: nil, game: randomGame()),
+    ]
     
     func addItem(item: LootItem) {
         loot.append(item)
     }
-}
-
-struct ContentView: View {
-    @StateObject var inventory = Inventory()
     
-    @State var showAddItemView = false
-    
-    var body: some View {
-        NavigationStack {
-            List {
-                Section{
-                    ForEach(inventory.loot, id: \.self) { item in
-                        NavigationLink {
-                            LootDetailView(item: item)
-                        } label: {
-                            LootRow(item: item)
-                        }
-                    }
-                }header: {
-                    Text("INFORMATIONS")
-                }
-                
-                Section{
-                    NavigationStack{
-                            HStack{
-                                ForEach(availableGames){ item in
-                                    GameCard(game: item)
-                            }
-                        }
-                    }
-                }header: {
-                    Text("VOS JEUX")
-                }
-            }
-            .sheet(isPresented: $showAddItemView, content: {
-                AddItemView()
-                    .environmentObject(inventory)
-            })
-            .navigationBarTitle("Inventaire") // Notre titre de page, choisissez le titre que vous voulez
-            .toolbar(content: { // La barre d'outil de notre page
-                ToolbarItem(placement: ToolbarItemPlacement.automatic) {
-                    Button(action: {
-                        showAddItemView.toggle() // L'action de notre bouton
-                    }, label: {
-                        Image(systemName: "plus.circle.fill")
-                    })
-                }
-            })
+    func updateItem(item: LootItem) {
+        print(item)
+        if let index = loot.firstIndex(where: { $0.name == item.name }) {
+            print(loot[index])
+            loot[index].name = item.name
+            loot[index].rarity = item.rarity
+            loot[index].quantity = item.quantity
+            loot[index].type = item.type
+            loot[index].game = item.game
+            loot[index].attackStrength = item.attackStrength
         }
     }
 }
 
+struct ContentView: View {
+    @State private var selectedFeature: LooterFeature = .loot
+    
+    var body: some View {
+        TabView(selection: $selectedFeature) {
+            LootView()
+                .tabItem {
+                    Label("Loot", systemImage: "gym.bag.fill")
+                }
+                .tag(LooterFeature.loot)
+            WishListView()
+                .tabItem {
+                    Label("Wishlist", systemImage: "wand.and.stars")
+                }
+                .tag(LooterFeature.wishList)
+            ProfileView()
+                .tabItem {
+                    Label("Profil", systemImage: "person.fill")
+                }
+                .tag(LooterFeature.profile)
+        }
+    }
+}	
+
+/*
 #Preview {
     ContentView()
 }
+*/

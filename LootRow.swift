@@ -29,8 +29,10 @@ struct LootRow: View {
     }
 }
 
+/*
 #Preview {
     LootRow(
         item : items.randomElement()!
     )
 }
+*/

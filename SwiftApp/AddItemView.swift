@@ -10,33 +10,44 @@ import SwiftUI
 struct AddItemView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var inventory: Inventory
-    @State var name : String = ""
-    @State var rarity : Rarity = .common
+    //@State var name : String = ""
+    //@State var rarity : Rarity = .common
     @State var quantity : Int = 1
     @State var attackItem : Bool = false
-    @State var type : ItemType = .unknown
-    @State var game : Game = .emptyGame
+    //@State var type : ItemType = .unknown
+    //@State var game : Game = .emptyGame
     @State var attackStrength : Int?
     
     @State var errorMessage : String = ""
     @State var showAlert : Bool = false
     
+    @State var item: LootItem = LootItem(name: "", type: .unknown, rarity: .common, game: .emptyGame)
+    @State var isEditing : Bool = false
+
+        
     var body: some View {
         HStack{
-            Text("Ajouter un loot")
-                .font(.title2)
+            if isEditing{
+                Text("Modifier le loot")
+                    .font(.title2)
+                    .padding(.top, 12)
+            }else{
+                Text("Ajouter un loot")
+                    .font(.title2)
+                    .padding(.top, 12)
+            }
         }
-        Form { // Wrapper de notre formulaire
-            Section { // Correspond à une section du formulaire
-                TextField("Nom de l'objet", text: $name)
-                Picker("Rarete", selection: $rarity) {
+        Form {
+            Section {
+                TextField("Nom de l'objet", text: $item.name)
+                Picker("Rarete", selection: $item.rarity) {
                     ForEach(Rarity.allCases, id: \.self) { rarity in
                         Text(String(describing: rarity).capitalized)
                     }
                 }
             }
             Section{
-                Picker("Jeu", selection: $game) {
+                Picker("Jeu", selection: $item.game) {
                     ForEach(availableGames, id: \.self) { game in
                         Text(game.name.capitalized)
                     }
@@ -49,9 +60,9 @@ struct AddItemView: View {
                 HStack{
                     Text("Type")
                     Spacer()
-                    Text("\(type.getLogo())")
+                    Text("\(item.type.getLogo())")
                 }
-                Picker("Type", selection: $type){
+                Picker("Type", selection: $item.type){
                     ForEach(ItemType.allCases, id: \.self) { type in
                         Text(type.getLogo())
                     }
@@ -74,13 +85,21 @@ struct AddItemView: View {
             Section{
                 Button(action: {
                     if validateForm() {
-                        addItem()
+                        if isEditing {
+                            updateItem(item: item)
+                        } else {
+                            addItem()
+                        }
                         dismiss()
                     } else {
                         showAlert = true
                     }
                 }, label: {
-                    Text("Ajouter")
+                    if isEditing{
+                        Text("Sauvegarder")
+                    } else{
+                        Text("Ajouter")
+                    }
                 })
             }
             .alert(isPresented: $showAlert) {
@@ -91,17 +110,17 @@ struct AddItemView: View {
     }
     
     func validateForm() -> Bool {
-        if name.isEmpty || name.count < 3 {
+        if item.name.isEmpty || item.name.count < 3 {
             errorMessage = "Le nom de l'objet doit faire au moins 3 caractères."
             return false
         }
         
-        if type == .unknown {
+        if item.type == .unknown {
             errorMessage = "Veuillez sélectionner un type valide."
             return false
         }
         
-        if game == .emptyGame {
+        if item.game == .emptyGame {
             errorMessage = "Veuillez sélectionner un jeu valide."
             return false
         }
@@ -112,13 +131,17 @@ struct AddItemView: View {
     func addItem() {
         inventory.addItem(item: LootItem(
             quantity: quantity,
-            name: name,
-            type: type,
-            rarity: rarity,
+            name: item.name,
+            type: item.type,
+            rarity: item.rarity,
             attackStrength: attackStrength,
-            game: game
+            game: item.game
+            )
         )
-        )
+    }
+    
+    func updateItem(item: LootItem) {
+        inventory.updateItem(item: item)
     }
 }
 
@@ -142,6 +165,9 @@ enum Rarity : CaseIterable{
     }
 }
 
+/*
 #Preview {
-    AddItemView()
+    AddItemView(
+    )
 }
+*/

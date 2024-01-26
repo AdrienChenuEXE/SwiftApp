@@ -16,15 +16,6 @@ struct LootItem : Hashable{
     var game: Game
 }
 
-let items: [LootItem] = [
-    LootItem(name: "Magic Wand", type: .magic, rarity: .common, attackStrength: 5, game: randomGame()),
-    LootItem(name: "Steel Armor", type: .poison, rarity: .uncommon, attackStrength: nil, game: randomGame()),
-    LootItem(name: "Fire Sword", type: .thunder, rarity: .rare, attackStrength: 15, game: randomGame()),
-    LootItem(name: "Health Potion", type: .ice, rarity: .common, attackStrength: nil, game: randomGame()),
-    LootItem(name: "Amulet of Power", type: .unknown, rarity: .epic, attackStrength: 30, game: randomGame()),
-    LootItem(name: "Swift Boots", type: .wind, rarity: .uncommon, attackStrength: nil, game: randomGame()),
-]
-
 enum ItemType: CaseIterable {
     case magic,
          fire,
